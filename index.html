@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Cobrinha</title>
+    <style>
+        body { text-align: center; background-color: black; }
+        canvas { background-color: #222; display: block; margin: auto; }
+    </style>
+</head>
+<body>
+    <h1 style="color: lime;">Jogo da Cobrinha</h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let snake = [{ x: 200, y: 200 }];
+        let direction = "right";
+        let food = { x: Math.random() * 380, y: Math.random() * 380 };
+        let gameSpeed = 150;
+
+        function drawSnake() {
+            ctx.fillStyle = "lime";
+            snake.forEach(part => ctx.fillRect(part.x, part.y, 20, 20));
+        }
+
+        function moveSnake() {
+            let head = { ...snake[0] };
+            if (direction === "right") head.x += 20;
+            if (direction === "left") head.x -= 20;
+            if (direction === "up") head.y -= 20;
+            if (direction === "down") head.y += 20;
+
+            if (head.x >= 400) head.x = 0;
+            if (head.x < 0) head.x = 380;
+            if (head.y >= 400) head.y = 0;
+            if (head.y < 0) head.y = 380;
+
+            snake.unshift(head);
+            if (head.x === food.x && head.y === food.y) {
+                food = { x: Math.random() * 380, y: Math.random() * 380 };
+            } else {
+                snake.pop();
+            }
+        }
+
+        function drawFood() {
+            ctx.fillStyle = "red";
+            ctx.fillRect(food.x, food.y, 20, 20);
+        }
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowRight" && direction !== "left") direction = "right";
+            if (event.key === "ArrowLeft" && direction !== "right") direction = "left";
+            if (event.key === "ArrowUp" && direction !== "down") direction = "up";
+            if (event.key === "ArrowDown" && direction !== "up") direction = "down";
+        });
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawSnake();
+            drawFood();
+            moveSnake();
+            setTimeout(gameLoop, gameSpeed);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
